@@ -22,6 +22,7 @@ class BaseOptimizer:
         ineq_fun: Optional[Callable] = None,
         n_job: int = 1,
         ftarget: Optional[float] = None,
+        stop_on_slowdown: Tuple = None, # (threshold, iterations)
         max_FEs: Optional[int] = None,
         minimize: bool = True,
         verbose: bool = False,
@@ -40,6 +41,7 @@ class BaseOptimizer:
         self.g: callable = ineq_fun
         self.n_job: int = max(1, int(n_job))
         self.ftarget: float = ftarget
+        self.stop_on_slowdown: Tuple = stop_on_slowdown, # (threshold, iterations)
         self.minimize: bool = minimize
         self.verbose: bool = verbose
         self.max_FEs: int = int(max_FEs) if max_FEs else np.inf
@@ -127,6 +129,13 @@ class BaseOptimizer:
         if self.ftarget is not None and self.xopt is not None:
             if self._compare(self.xopt.fitness[0], self.ftarget):
                 self.stop_dict["ftarget"] = self.xopt.fitness[0]
+
+        if self.stop_on_slowdown is not None:
+            if len(self.data.fitness)>stop_on_slowdown[2] and len(self.data.fitness)>self.stop_on_slowdown[1]:
+                tmp = np.maximum.accumulate(self.data.fitness)[-self.stop_on_slowdown[1]:]
+                if np.max(tmp)-np.min(tmp)<self.stop_on_slowdown[0]:
+                    self.stop_dict["stop_on_slowdown"] = (np.max(tmp)-np.min(tmp), self.stop_on_slowdown[1])
+
 
         return bool(self.stop_dict)
 
