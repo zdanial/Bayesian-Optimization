@@ -136,7 +136,7 @@ class BaseOptimizer:
             pass
         else:
             if self.stop_on_slowdown is not None:
-                if len(self.data.fitness)>self.stop_on_slowdown[1]+stop_on_slowdown[2]:# and len(self.data.fitness)>self.stop_on_slowdown[1]:
+                if len(self.data.fitness)>self.stop_on_slowdown[1]+self.stop_on_slowdown[2]:# and len(self.data.fitness)>self.stop_on_slowdown[1]:
                     tmp = np.maximum.accumulate(self.data.fitness)[-self.stop_on_slowdown[1]:]
                     if np.max(tmp)-np.min(tmp)<self.stop_on_slowdown[0]:
                         self.stop_dict["stop_on_slowdown"] = (np.max(tmp)-np.min(tmp), self.stop_on_slowdown[1])
