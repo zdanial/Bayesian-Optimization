@@ -130,11 +130,16 @@ class BaseOptimizer:
             if self._compare(self.xopt.fitness[0], self.ftarget):
                 self.stop_dict["ftarget"] = self.xopt.fitness[0]
 
-        if self.stop_on_slowdown is not None:
-            if len(self.data.fitness)>stop_on_slowdown[2] and len(self.data.fitness)>self.stop_on_slowdown[1]:
-                tmp = np.maximum.accumulate(self.data.fitness)[-self.stop_on_slowdown[1]:]
-                if np.max(tmp)-np.min(tmp)<self.stop_on_slowdown[0]:
-                    self.stop_dict["stop_on_slowdown"] = (np.max(tmp)-np.min(tmp), self.stop_on_slowdown[1])
+        try:
+            self.data
+        except:
+            pass
+        else:
+            if self.stop_on_slowdown is not None:
+                if len(self.data.fitness)>self.stop_on_slowdown[1]+stop_on_slowdown[2]:# and len(self.data.fitness)>self.stop_on_slowdown[1]:
+                    tmp = np.maximum.accumulate(self.data.fitness)[-self.stop_on_slowdown[1]:]
+                    if np.max(tmp)-np.min(tmp)<self.stop_on_slowdown[0]:
+                        self.stop_dict["stop_on_slowdown"] = (np.max(tmp)-np.min(tmp), self.stop_on_slowdown[1])
 
 
         return bool(self.stop_dict)
